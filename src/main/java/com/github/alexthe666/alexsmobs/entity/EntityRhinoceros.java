@@ -251,8 +251,18 @@ public class EntityRhinoceros extends Animal implements IAnimatedEntity {
         }
     }
 
+    @Nullable
     public Holder<MobEffect> getPotionEffectHolder() {
-        return BuiltInRegistries.MOB_EFFECT.wrapAsHolder(BuiltInRegistries.MOB_EFFECT.get(ResourceLocation.parse(this.getAppliedPotionId())));
+        // lab2: wrapAsHolder(null) devolvía un Holder vacío (NPE en MobEffectInstance); ahora null si no hay efecto válido.
+        String id = this.getAppliedPotionId();
+        if (id == null || id.isEmpty()) {
+            return null;
+        }
+        ResourceLocation loc = ResourceLocation.tryParse(id);
+        if (loc == null) {
+            return null;
+        }
+        return BuiltInRegistries.MOB_EFFECT.getHolder(loc).orElse(null);
     }
 
     public int getPotionDuration() {
